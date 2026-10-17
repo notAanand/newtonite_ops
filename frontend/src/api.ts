@@ -1,0 +1,3 @@
+const base=import.meta.env.VITE_API_URL||'http://localhost:4000/api';
+export function token(){return localStorage.getItem('ops_token');}
+export async function api<T>(path:string,init:RequestInit={}):Promise<T>{const headers=new Headers(init.headers);headers.set('Content-Type','application/json');if(token())headers.set('Authorization',`Bearer ${token()}`);const response=await fetch(`${base}${path}`,{...init,headers});const payload=await response.json().catch(()=>({error:'Unexpected server response'}));if(!response.ok){const error=new Error(payload.error||'Request failed') as Error&{status:number};error.status=response.status;throw error;}return payload as T;}
